@@ -1,1 +1,110 @@
+-- Check for Nulls or Duplicates in Primary Key
+-- Expectations: No Result
+
+SELECT DISTINCT
+gen
+FROM silver .erp_cust_az12
+  
+-- Check for unwanted spaces 
+-- Expectation : No Result
+SELECT DISTINCT cat
+FROM bronze.erp_PX_CAT_G1V2;
+
+
+WHERE cst_firstname !=TRIM(cst_firstname)
+
+
+-- Check for unwanted spaces 
+-- Expectation : No Result
+SELECT order_dt      
+FROM bronze.crm_sales_details
+WHERE sls_order_dt < = 0 
+
+
+
+-- Check for NULL's or Negative Numbers
+-- Expectation : No Results
+SELECT 
+NULLIF(sls_order_dt,0) sls_order_dt
+FROM bronze.crm_sales_details
+WHERE sls_order_dt < = 0
+
+-- Data Standardization & Consistency
+SELECT DISTINCT Cat
+FROM silver.crm_prd_info
+
+SELECT * FROM silver.crm_prd_info;
+
+
+-- Check for invalid Date Orders
+SELECT 
+* 
+FROM silver.crm_sales_details
+WHERE sls_order_dt > sls_ship_dt OR sls_order_dt > sls_due_dt
+
+
+
+
+-- Check for invalid Dates
+ SELECT DISTINCT
+ bdate
+ FROM bronze.erp_cust_az12
+ WHERE bdate < '1924-01-01'
+ ORDER BY bdate
+
+SELECT DISTINCT
+    sls_sales    AS old_sls_sales,
+    sls_quantity,
+    sls_price    AS old_sls_price,
+
+    -- Corrected sales
+    CASE 
+        WHEN sls_sales IS NULL 
+          OR sls_sales <= 0
+          OR sls_sales <> sls_quantity * ABS(sls_price)
+        THEN sls_quantity * ABS(sls_price)
+        ELSE sls_sales
+    END AS sls_sales,
+
+    -- Corrected price
+    CASE 
+        WHEN sls_price IS NULL 
+          OR sls_price <= 0
+        THEN sls_sales / NULLIF(sls_quantity, 0)
+        ELSE sls_price
+    END AS sls_price
+
+FROM bronze.crm_sales_details
+WHERE
+      sls_sales IS NULL
+   OR sls_quantity IS NULL
+   OR sls_price IS NULL
+   OR sls_sales <= 0
+   OR sls_quantity <= 0
+   OR sls_price <= 0
+   OR sls_sales <> sls_quantity * sls_price
+ORDER BY
+    sls_sales,
+    sls_quantity,
+    sls_price;
+
+
+SELECT DISTINCT
+    sls_sales,
+    sls_quantity,
+    sls_price
+FROM silver.crm_sales_details
+WHERE 
+      sls_sales IS NULL
+   OR sls_quantity IS NULL
+   OR sls_price IS NULL
+   OR sls_sales <= 0
+   OR sls_quantity <= 0
+   OR sls_price <= 0
+   OR sls_sales <> sls_quantity * sls_price
+ORDER BY 
+    sls_sales,
+    sls_quantity,
+    sls_price;
+
 

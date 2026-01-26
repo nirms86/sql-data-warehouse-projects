@@ -1,3 +1,18 @@
+-- Data Standardization & Consistency
+SELECT DISTINCT
+	gen
+FROM silver.erp.cust_az12;
+
+-- =======================================================================
+-- Checking 'silver.erp_loc_a101'
+-- =======================================================================
+
+-- Data Standardization & Consistency
+SELECT DISTINCT
+	cntry
+FROM silver.erp.loc_a101
+ORDER BY cntry;
+
 -- Check for Nulls or Duplicates in Primary Key
 -- Expectations: No Result
 
